@@ -51,6 +51,14 @@ func (c *client) broadcastHandler() {
 
 	for {
 		select {
+		case <-pingTicker.C:
+			log.Printf("Sent ping to %v\n", c.name)
+
+			_ = c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+
+			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+				return
+			}
 		case message := <-c.broadcastChan:
 			_ = c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 
@@ -69,14 +77,7 @@ func (c *client) broadcastHandler() {
 				log.Printf("Error while closing: %v\n", closeErr)
 				return
 			}
-		case <-pingTicker.C:
-			log.Printf("Sent ping to %v\n", c.name)
 
-			_ = c.conn.SetWriteDeadline(time.Now().Add(writeWait))
-
-			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				return
-			}
 		}
 	}
 }
