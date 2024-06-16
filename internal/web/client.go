@@ -77,7 +77,6 @@ func (c *client) broadcastHandler() {
 				log.Printf("Error while closing: %v\n", closeErr)
 				return
 			}
-
 		}
 	}
 }
